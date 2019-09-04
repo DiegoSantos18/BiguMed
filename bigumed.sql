@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 31-Ago-2019 às 01:52
+-- Generation Time: 05-Set-2019 às 03:26
 -- Versão do servidor: 10.1.37-MariaDB
 -- versão do PHP: 7.2.12
 
@@ -42,6 +42,19 @@ CREATE TABLE `medicamento` (
 -- --------------------------------------------------------
 
 --
+-- Estrutura da tabela `medicamentoprescricao`
+--
+
+CREATE TABLE `medicamentoprescricao` (
+  `id` int(11) NOT NULL,
+  `id_prescricao` int(11) DEFAULT NULL,
+  `id_medicamento` int(11) DEFAULT NULL,
+  `data_prescricao` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Estrutura da tabela `medico`
 --
 
@@ -61,13 +74,15 @@ INSERT INTO `medico` (`cpf`, `crm`, `especialidade`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `paciente`
+-- Estrutura da tabela `prescricao`
 --
 
-CREATE TABLE `paciente` (
-  `cpf` char(11) CHARACTER SET utf8 NOT NULL,
-  `rg` varchar(25) NOT NULL,
-  `nroconvenio` varchar(30) NOT NULL
+CREATE TABLE `prescricao` (
+  `id_prescricao` int(11) NOT NULL,
+  `periodicidade` varchar(100) DEFAULT NULL,
+  `quantidade` int(20) DEFAULT NULL,
+  `duração` varchar(50) DEFAULT NULL,
+  `observacao` varchar(300) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -79,18 +94,15 @@ CREATE TABLE `paciente` (
 CREATE TABLE `usuario` (
   `cpf` char(11) NOT NULL,
   `senha` varchar(20) NOT NULL,
-  `nomecompleto` varchar(70) NOT NULL,
-  `tipo` int(11) NOT NULL
+  `nomecompleto` varchar(70) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `usuario`
 --
 
-INSERT INTO `usuario` (`cpf`, `senha`, `nomecompleto`, `tipo`) VALUES
-('03500088090', '123456', 'Henrique Dario Müller', 2),
-('04053085071', '12345', 'Diego Santos', 1),
-('67136049008', '987654321', 'Fulano Ciclano', 3);
+INSERT INTO `usuario` (`cpf`, `senha`, `nomecompleto`) VALUES
+('04053085071', '12345', 'Diego Santos');
 
 --
 -- Indexes for dumped tables
@@ -103,6 +115,14 @@ ALTER TABLE `medicamento`
   ADD PRIMARY KEY (`id_medicamento`);
 
 --
+-- Indexes for table `medicamentoprescricao`
+--
+ALTER TABLE `medicamentoprescricao`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `id_prescricao` (`id_prescricao`),
+  ADD KEY `id_medicamento` (`id_medicamento`);
+
+--
 -- Indexes for table `medico`
 --
 ALTER TABLE `medico`
@@ -110,10 +130,10 @@ ALTER TABLE `medico`
   ADD UNIQUE KEY `cpf` (`cpf`);
 
 --
--- Indexes for table `paciente`
+-- Indexes for table `prescricao`
 --
-ALTER TABLE `paciente`
-  ADD PRIMARY KEY (`cpf`);
+ALTER TABLE `prescricao`
+  ADD PRIMARY KEY (`id_prescricao`);
 
 --
 -- Indexes for table `usuario`
@@ -127,16 +147,17 @@ ALTER TABLE `usuario`
 --
 
 --
+-- Limitadores para a tabela `medicamentoprescricao`
+--
+ALTER TABLE `medicamentoprescricao`
+  ADD CONSTRAINT `medicamentoprescricao_ibfk_1` FOREIGN KEY (`id_prescricao`) REFERENCES `prescricao` (`id_prescricao`),
+  ADD CONSTRAINT `medicamentoprescricao_ibfk_2` FOREIGN KEY (`id_medicamento`) REFERENCES `medicamento` (`id_medicamento`);
+
+--
 -- Limitadores para a tabela `medico`
 --
 ALTER TABLE `medico`
   ADD CONSTRAINT `medico_ibfk_1` FOREIGN KEY (`cpf`) REFERENCES `usuario` (`cpf`);
-
---
--- Limitadores para a tabela `paciente`
---
-ALTER TABLE `paciente`
-  ADD CONSTRAINT `paciente_ibfk_1` FOREIGN KEY (`cpf`) REFERENCES `usuario` (`cpf`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
